@@ -1,4 +1,3 @@
-import sys
 import pprint
 from pathlib import Path
 from typing import Tuple, List, Dict, Optional
@@ -28,7 +27,7 @@ def total_salary(path: str) -> Tuple[float, float]:
                     name, salary = line.split(",")
                     total += float(salary)
                     count += 1
-        
+
         average = total / count if count > 0 else 0.0
         return total, average
 
@@ -74,19 +73,28 @@ def list_directory_contents(path: Path, prefix: str = "") -> None:
         if not path.exists() or not path.is_dir():
             return
 
-        items = sorted(path.iterdir(), key=lambda x: (x.is_file(), x.name.lower()))
-        
+        items = sorted(
+            path.iterdir(),
+            key=lambda x: (x.is_file(), x.name.lower())
+        )
+
         for i, item in enumerate(items):
             is_last = (i == len(items) - 1)
             connector = "┗ " if is_last else "┣ "
-            
+
             if item.is_dir():
-                print(f"{prefix}{connector}{Fore.BLUE}📂 {item.name}{Style.RESET_ALL}")
+                print(
+                    f"{prefix}{connector}{Fore.BLUE}📂 {item.name}"
+                    f"{Style.RESET_ALL}"
+                )
                 new_prefix = prefix + ("  " if is_last else "┃ ")
                 list_directory_contents(item, new_prefix)
             else:
-                print(f"{prefix}{connector}{Fore.GREEN}📜 {item.name}{Style.RESET_ALL}")
-                
+                print(
+                    f"{prefix}{connector}{Fore.GREEN}📜 {item.name}"
+                    f"{Style.RESET_ALL}"
+                )
+
     except PermissionError:
         print(f"{prefix}┗ {Fore.RED}[Доступ заборонено]")
 
@@ -95,7 +103,7 @@ def parse_input(user_input: str) -> Tuple[Optional[str], List[str]]:
     """Розбирає введений рядок на команду та аргументи."""
     if not user_input.strip():
         return None, []
-    
+
     parts = user_input.split()
     cmd = parts[0].strip().lower()
     args = parts[1:]
@@ -139,7 +147,7 @@ def show_all(contacts: Dict[str, str]) -> None:
     if not contacts:
         print(f"{Fore.YELLOW}Contact list is empty.")
         return
-    
+
     for name, phone in contacts.items():
         print(f"{Fore.CYAN}{name}: {phone}")
 
