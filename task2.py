@@ -6,11 +6,8 @@ from colorama import Fore, Style, init
 # Ініціалізація colorama для кольорового виводу в консолі
 init(autoreset=True)
 
-# ЗАВДАННЯ 1:
-
 
 def total_salary(path: str) -> Tuple[float, float]:
-
     path_obj = Path(path)
     if not path_obj.exists():
         print(f"{Fore.RED}Помилка: Файл {path} не знайдено.")
@@ -36,10 +33,7 @@ def total_salary(path: str) -> Tuple[float, float]:
         return (0.0, 0.0)
 
 
-# ЗАВДАННЯ 2
-
 def get_cats_info(path: str) -> List[Dict[str, str]]:
-
     cats_info = []
     path_obj = Path(path)
 
@@ -65,8 +59,6 @@ def get_cats_info(path: str) -> List[Dict[str, str]]:
         return []
 
 
-# ЗАВДАННЯ 3:
-
 def list_directory_contents(path: Path, prefix: str = "") -> None:
     """Рекурсивно виводить структуру директорії у вигляді дерева."""
     try:
@@ -90,10 +82,8 @@ def list_directory_contents(path: Path, prefix: str = "") -> None:
                 new_prefix = prefix + ("  " if is_last else "┃ ")
                 list_directory_contents(item, new_prefix)
             else:
-                print(
-                    f"{prefix}{connector}{Fore.GREEN}📜 {item.name}"
-                    f"{Style.RESET_ALL}"
-                )
+                print(f"{prefix}{connector}{Fore.GREEN}📜 "
+                      f"{item.name}{Style.RESET_ALL}")
 
     except PermissionError:
         print(f"{prefix}┗ {Fore.RED}[Доступ заборонено]")
@@ -120,30 +110,28 @@ def add_contact(args: List[str], contacts: Dict[str, str]) -> str:
 
 
 def change_contact(args: List[str], contacts: Dict[str, str]) -> str:
-
+    """Оновлює номер існуючого контакту."""
     if len(args) < 2:
         return f"{Fore.YELLOW}Error: Give me name and phone please."
     name, phone = args
     if name in contacts:
         contacts[name] = phone
         return f"{Fore.GREEN}Contact updated."
-    else:
-        return f"{Fore.RED}Error: Contact '{name}' not found."
+    return f"{Fore.RED}Error: Contact '{name}' not found."
 
 
 def show_phone(args: List[str], contacts: Dict[str, str]) -> str:
-
+    """Виводить номер телефону за ім'ям."""
     if not args:
         return f"{Fore.YELLOW}Error: Enter user name."
     name = args[0]
     if name in contacts:
         return f"{Fore.CYAN}{contacts[name]}"
-    else:
-        return f"{Fore.RED}Error: Contact '{name}' not found."
+    return f"{Fore.RED}Error: Contact '{name}' not found."
 
 
 def show_all(contacts: Dict[str, str]) -> None:
-
+    """Виводить всі контакти."""
     if not contacts:
         print(f"{Fore.YELLOW}Contact list is empty.")
         return
@@ -153,15 +141,17 @@ def show_all(contacts: Dict[str, str]) -> None:
 
 
 def main() -> None:
-
+    """Основна функція бота-помічника."""
     contacts: Dict[str, str] = {}
-    print(f"{Fore.CYAN}Ласкаво просимо до бота-помічника!")
 
+    # Створення тестових даних
     with open("salary_test.txt", "w", encoding="utf-8") as f:
         f.write("Alex Korp,3000\nNikita Borisenko,2000\nSitarama Raju,1000")
 
     with open("cats_test.txt", "w", encoding="utf-8") as f:
         f.write("60b90c1c1,Tayson,3\n60b90c242,Vika,1\n60b90c2e3,Barsik,2")
+
+    print(f"{Fore.CYAN}Ласкаво просимо до бота-помічника!")
 
     while True:
         user_input = input("\nВведіть команду: ")
@@ -186,7 +176,6 @@ def main() -> None:
         elif command == "all":
             show_all(contacts)
 
-        # Блок команд для тестування попередніх завдань
         elif command == "test_salary":
             total, avg = total_salary("salary_test.txt")
             print(f"Сума: {total}, Середня: {avg}")
