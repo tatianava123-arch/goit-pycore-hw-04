@@ -1,16 +1,16 @@
 import sys
 import pprint
 from pathlib import Path
+from typing import Tuple, List, Dict, Optional
 from colorama import Fore, Style, init
 
 # Ініціалізація colorama для кольорового виводу в консолі
 init(autoreset=True)
 
-
 # ЗАВДАННЯ 1:
 
-
-def total_salary(path: str) -> tuple[float, float]:
+def total_salary(path: str) -> Tuple[float, float]:
+    
     path_obj = Path(path)
     if not path_obj.exists():
         print(f"{Fore.RED}Помилка: Файл {path} не знайдено.")
@@ -37,8 +37,8 @@ def total_salary(path: str) -> tuple[float, float]:
 
 # ЗАВДАННЯ 2
 
+def get_cats_info(path: str) -> List[Dict[str, str]]:
 
-def get_cats_info(path: str) -> list[dict]:
     cats_info = []
     path_obj = Path(path)
     
@@ -66,12 +66,11 @@ def get_cats_info(path: str) -> list[dict]:
 
 # ЗАВДАННЯ 3:
 
-def list_directory_contents(path: Path, prefix: str = ""):
-
+def list_directory_contents(path: Path, prefix: str = "") -> None:
+    """Рекурсивно виводить структуру директорії у вигляді дерева."""
     try:
         if not path.exists() or not path.is_dir():
             return
-
 
         items = sorted(path.iterdir(), key=lambda x: (x.is_file(), x.name.lower()))
         
@@ -81,7 +80,6 @@ def list_directory_contents(path: Path, prefix: str = ""):
             
             if item.is_dir():
                 print(f"{prefix}{connector}{Fore.BLUE}📂 {item.name}{Style.RESET_ALL}")
-                # Рекурсивний виклик для підпапок
                 new_prefix = prefix + ("  " if is_last else "┃ ")
                 list_directory_contents(item, new_prefix)
             else:
@@ -91,93 +89,64 @@ def list_directory_contents(path: Path, prefix: str = ""):
         print(f"{prefix}┗ {Fore.RED}[Доступ заборонено]")
 
 
-# ЗАВДАННЯ 4: 
+def parse_input(user_input: str) -> Tuple[Optional[str], List[str]]:
+    """Розбирає введений рядок на команду та аргументи."""
+    if not user_input.strip():
+        return None, []
+    
+    parts = user_input.split()
+    cmd = parts[0].strip().lower()
+    args = parts[1:]
+    return cmd, args
 
-def parse_input(user_input):
-    """
-    Розбирає введений рядок на команду та аргументи.
-    """
-    try:
-        cmd, *args = user_input.split()
-        cmd = cmd.strip().lower()
-        return cmd, *args
-    except ValueError:
-        return None, None
 
-def add_contact(args, contacts):
+def add_contact(args: List[str], contacts: Dict[str, str]) -> str:
+    """Додає новий контакт до словника."""
     if len(args) < 2:
-        return "Error: Give me name and phone please."
+        return f"{Fore.YELLOW}Error: Give me name and phone please."
     name, phone = args
     contacts[name] = phone
-    return "Contact added."
+    return f"{Fore.GREEN}Contact added."
 
-def change_contact(args, contacts):
+
+def change_contact(args: List[str], contacts: Dict[str, str]) -> str:
+
     if len(args) < 2:
-        return "Error: Give me name and phone please."
+        return f"{Fore.YELLOW}Error: Give me name and phone please."
     name, phone = args
     if name in contacts:
         contacts[name] = phone
-        return "Contact updated."
+        return f"{Fore.GREEN}Contact updated."
     else:
-        return f"Error: Contact '{name}' not found."
+        return f"{Fore.RED}Error: Contact '{name}' not found."
 
-def show_phone(args, contacts):
+
+def show_phone(args: List[str], contacts: Dict[str, str]) -> str:
+
     if not args:
-        return "Error: Enter user name."
+        return f"{Fore.YELLOW}Error: Enter user name."
     name = args[0]
     if name in contacts:
-        return contacts[name]
+        return f"{Fore.CYAN}{contacts[name]}"
     else:
-        return f"Error: Contact '{name}' not found."
+        return f"{Fore.RED}Error: Contact '{name}' not found."
 
-def show_all(contacts):
+
+def show_all(contacts: Dict[str, str]) -> None:
+
     if not contacts:
-        return "Contact list is empty."
+        print(f"{Fore.YELLOW}Contact list is empty.")
+        return
     
-    result = []
     for name, phone in contacts.items():
-        result.append(f"{name}: {phone}")
-    return "\n".join(result)
+        print(f"{Fore.CYAN}{name}: {phone}")
 
-def main():
-    contacts = {}
-    print("Welcome to the assistant bot!")
+
+def main() -> None:
     
-    while True:
-        user_input = input("Enter a command: ")
-        command, *args = parse_input(user_input)
-
-        if command in ["close", "exit"]:
-            print("Good bye!")
-            break
-
-        elif command == "hello":
-            print("How can I help you?")
-
-        elif command == "add":
-            print(add_contact(args, contacts))
-
-        elif command == "change":
-            print(change_contact(args, contacts))
-
-        elif command == "phone":
-            print(show_phone(args, contacts))
-
-        elif command == "all":
-            print(show_all(contacts))
-
-        else:
-            print("Invalid command.")
-
-
-
-
-
-def main():
-    contacts = {}
+    contacts: Dict[str, str] = {}
     print(f"{Fore.CYAN}Ласкаво просимо до бота-помічника!")
     
-   
     with open("salary_test.txt", "w", encoding="utf-8") as f:
         f.write("Alex Korp,3000\nNikita Borisenko,2000\nSitarama Raju,1000")
     
@@ -186,7 +155,7 @@ def main():
 
     while True:
         user_input = input("\nВведіть команду: ")
-        command, *args = parse_input(user_input)
+        command, args = parse_input(user_input)
 
         if command in ["close", "exit"]:
             print(f"{Fore.MAGENTA}До побачення!")
@@ -205,12 +174,9 @@ def main():
             print(show_phone(args, contacts))
             
         elif command == "all":
-            if not contacts:
-                print("Список контактів порожній.")
-            for name, phone in contacts.items():
-                print(f"{Fore.CYAN}{name}: {phone}")
+            show_all(contacts)
         
-        # Відповіді на завдання 
+        # Блок команд для тестування попередніх завдань
         elif command == "test_salary":
             total, avg = total_salary("salary_test.txt")
             print(f"Сума: {total}, Середня: {avg}")
@@ -227,6 +193,7 @@ def main():
             
         else:
             print(f"{Fore.RED}Невідома команда.")
+
 
 if __name__ == "__main__":
     main()
